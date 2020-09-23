@@ -16,13 +16,13 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: Text("Yemek"),
         ),
-        body: UserInformation(),
+        body: GetData(),
       ),
     );
   }
 }
 
-class UserInformation extends StatelessWidget {
+class GetData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CollectionReference users = FirebaseFirestore.instance.collection('food');
