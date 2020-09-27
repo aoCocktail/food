@@ -8,20 +8,20 @@ void main() => runApp(MaterialApp());
 // ignore: must_be_immutable
 class DetailPage extends StatelessWidget {
   String passData;
-  DetailPage(this.passData);
+  DetailPage({Key key, @required this.passData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return  MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            title: Text("Detay"),
-            leading: BackButton(
-              onPressed: () => Navigator.pop(context),
-            ),
+        appBar: AppBar(
+          title: Text("Detay"),
+          leading: BackButton(
+            onPressed: () => Navigator.pop(context),
           ),
-          body: CreateCards(passData: passData),
         ),
+        body: CreateCards(passData: passData),
+      ),
     );
   }
 }
@@ -58,7 +58,7 @@ class CreateCardsState extends State<CreateCards> {
     return ListView(
       padding: EdgeInsets.only(top: 20.0),
       children:
-          snapshot.map<Widget>((data) => buildListItem(context, data)).toList(),
+      snapshot.map<Widget>((data) => buildListItem(context, data)).toList(),
     );
   }
 

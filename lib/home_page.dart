@@ -64,7 +64,7 @@ class CreateCardState extends State {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => CreateCards(passData: row.country)),
+                builder: (context) => DetailPage(passData: row.country)),
           ),
           child: Column(children: [
             Container(
