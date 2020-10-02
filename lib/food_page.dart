@@ -2,13 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
 
 import 'package:flutter/material.dart';
-import 'package:food/food_page.dart';
 
 void main() => runApp(MaterialApp());
 
-class DetailPage extends StatelessWidget {
+class FoodPage extends StatelessWidget {
   String passData;
-  DetailPage({Key key, @required this.passData}) : super(key: key);
+  FoodPage({Key key, @required this.passData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +15,7 @@ class DetailPage extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: Text(passData.substring(0, 1).toUpperCase() +
-              passData.substring(1, passData.length) +
-              " Kategorileri"),
+              passData.substring(1, passData.length)),
           leading: BackButton(
             onPressed: () => Navigator.pop(context),
           ),
@@ -69,40 +67,32 @@ class CreateCardsState extends State<CreateCards> {
 
     return Padding(
       padding: const EdgeInsets.all(0.0),
-      child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  // ignore: deprecated_member_use
-                  FoodPage(passData: row.reference.documentID)),
-        ),
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 150,
-              child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(row.categoryPhoto),
-                        fit: BoxFit.cover)),
-              ),
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 200,
+            child: Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage(row.photo), fit: BoxFit.cover)),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class GetCard {
-  String categoryPhoto;
-
+  String photo;
+  String name;
   DocumentReference reference;
 
   GetCard.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map["photo"] != null),
-        categoryPhoto = map["photo"];
+        assert(map["name"] != null),
+        photo = map["photo"],
+        name = map["name"];
 
   GetCard.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data(), reference: snapshot.reference);
