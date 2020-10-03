@@ -2,50 +2,57 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
 
 import 'package:flutter/material.dart';
-import 'package:food/food_page.dart';
 
 void main() => runApp(MaterialApp());
 
-class DetailPage extends StatelessWidget {
+class FoodDetail extends StatelessWidget {
   String passData;
-  DetailPage({Key key, @required this.passData}) : super(key: key);
+  String passDataName;
+  FoodDetail({Key key, @required this.passData, @required this.passDataName})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text(passData.substring(0, 1).toUpperCase() +
-              passData.substring(1, passData.length) +
-              " Kategorileri"),
+          title: Text(passDataName.substring(0, 1).toUpperCase() +
+              passDataName.substring(1, passDataName.length)),
           leading: BackButton(
             onPressed: () => Navigator.pop(context),
           ),
         ),
-        body: CreateCards(passData: passData),
+        body: CreateCards(passData: passData, passDataName: passDataName),
       ),
     );
   }
 }
 
 class CreateCards extends StatefulWidget {
-  String passData;
-  CreateCards({Key key, @required this.passData}) : super(key: key);
+  String passData, passDataName;
+  CreateCards({Key key, @required this.passData, @required this.passDataName})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return CreateCardsState(passData);
+    return CreateCardsState(
+        passData: this.passData, passDataName: this.passDataName);
   }
 }
 
 class CreateCardsState extends State<CreateCards> {
   String passData;
-  CreateCardsState(this.passData);
+  String passDataName;
+  CreateCardsState(
+      {Key key, @required this.passData, @required this.passDataName});
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection(passData).snapshots(),
+      stream: Firestore.instance
+          .collection(passData)
+          .where('name', isEqualTo: passDataName)
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
@@ -69,40 +76,32 @@ class CreateCardsState extends State<CreateCards> {
 
     return Padding(
       padding: const EdgeInsets.all(0.0),
-      child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  // ignore: deprecated_member_use
-                  FoodPage(passData: row.reference.documentID)),
-        ),
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 150,
-              child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(row.categoryPhoto),
-                        fit: BoxFit.cover)),
-              ),
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            height: 200,
+            child: Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage(row.photo), fit: BoxFit.cover)),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
 class GetCard {
-  String categoryPhoto;
-
+  String photo;
+  String name;
   DocumentReference reference;
 
   GetCard.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map["photo"] != null),
-        categoryPhoto = map["photo"];
+        assert(map["name"] != null),
+        photo = map["photo"],
+        name = map["name"];
 
   GetCard.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data(), reference: snapshot.reference);

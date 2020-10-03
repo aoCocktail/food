@@ -2,14 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
 
 import 'package:flutter/material.dart';
-import 'package:food/food_detail_page.dart';
+import 'package:food/food_page.dart';
 
 void main() => runApp(MaterialApp());
 
-class FoodPage extends StatelessWidget {
+class DetailPage extends StatelessWidget {
   String passData;
-  String passDataName;
-  FoodPage({Key key, @required this.passData}) : super(key: key);
+  DetailPage({Key key, @required this.passData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -75,16 +74,17 @@ class CreateCardsState extends State<CreateCards> {
           MaterialPageRoute(
               builder: (context) =>
                   // ignore: deprecated_member_use
-                  FoodDetail(passData: passData, passDataName: row.name)),
+                  FoodPage(passData: row.reference.documentID)),
         ),
         child: Column(
           children: <Widget>[
             SizedBox(
-              height: 200,
+              height: 150,
               child: Container(
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: NetworkImage(row.photo), fit: BoxFit.cover)),
+                        image: NetworkImage(row.categoryPhoto),
+                        fit: BoxFit.cover)),
               ),
             ),
           ],
@@ -95,15 +95,13 @@ class CreateCardsState extends State<CreateCards> {
 }
 
 class GetCard {
-  String photo;
-  String name;
+  String categoryPhoto;
+
   DocumentReference reference;
 
   GetCard.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map["photo"] != null),
-        assert(map["name"] != null),
-        photo = map["photo"],
-        name = map["name"];
+        categoryPhoto = map["photo"];
 
   GetCard.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data(), reference: snapshot.reference);
