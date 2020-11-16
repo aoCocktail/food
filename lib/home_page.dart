@@ -17,7 +17,10 @@ class HomePage extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text("Yemek"),
+          title: Text(
+            'food mood',
+            style: TextStyle(fontFamily: 'Berlin Sans FB Regular'),
+          ),
         ),
         body: CreateCard(),
       ),
@@ -36,7 +39,10 @@ class CreateCardState extends State {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection("countries").snapshots(),
+      stream: Firestore.instance
+          .collection("countries")
+          .orderBy('name', descending: false)
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
@@ -49,7 +55,6 @@ class CreateCardState extends State {
 
   Widget buildBody(BuildContext context, List<DocumentSnapshot> snapshot) {
     return ListView(
-      padding: EdgeInsets.only(top: 20.0),
       children:
           snapshot.map<Widget>((data) => buildListItem(context, data)).toList(),
     );
@@ -58,62 +63,59 @@ class CreateCardState extends State {
   buildListItem(BuildContext context, DocumentSnapshot data) {
     final row = GetCard.fromSnapshot(data);
 
+    // double height = MediaQuery.of(context).size.height;
+    // double width = MediaQuery.of(context).size.width;
     return ExpandableNotifier(
-        child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          DetailPage(passData: row.reference.documentID)),
+        child: Card(
+      child: InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  DetailPage(passData: row.reference.documentID)),
+        ),
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 200,
+              child: Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(row.photo), fit: BoxFit.cover)),
+              ),
+            ),
+            ScrollOnExpand(
+              scrollOnExpand: true,
+              scrollOnCollapse: false,
+              child: ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToCollapse: true,
+                  collapseIcon: Icons.fastfood,
                 ),
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(
-                      height: 200,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(row.photo),
-                                fit: BoxFit.cover)),
-                      ),
-                    ),
-                    ScrollOnExpand(
-                      scrollOnExpand: true,
-                      scrollOnCollapse: false,
-                      child: ExpandablePanel(
-                        theme: const ExpandableThemeData(
-                          headerAlignment:
-                              ExpandablePanelHeaderAlignment.center,
-                          tapBodyToCollapse: true,
-                        ),
-                        header: Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                              row.name,
-                            )),
-                        expanded: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                                padding: EdgeInsets.all(7),
-                                child: Text(
-                                  row.definition,
-                                  style: TextStyle(fontSize: 20),
-                                  softWrap: true,
-                                  overflow: TextOverflow.fade,
-                                )),
-                          ],
-                        ),
-                      ),
+                header: Text(
+                  row.name,
+                  style: TextStyle(
+                      fontSize: 22, fontFamily: 'Berlin Sans FB Regular'),
+                  textAlign: TextAlign.center,
+                ),
+                expanded: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      row.definition,
+                      style: TextStyle(fontSize: 17),
+                      softWrap: true,
+                      overflow: TextOverflow.fade,
                     ),
                   ],
                 ),
               ),
-            )));
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 }
 

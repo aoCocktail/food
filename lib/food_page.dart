@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:expandable/expandable.dart';
-
 import 'package:flutter/material.dart';
 import 'package:food/food_detail_page.dart';
 
@@ -16,8 +14,10 @@ class FoodPage extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text(passData.substring(0, 1).toUpperCase() +
-              passData.substring(1, passData.length)),
+          title: Text(
+            passData.substring(2, passData.length),
+            style: TextStyle(fontFamily: 'Berlin Sans FB Regular'),
+          ),
           leading: BackButton(
             onPressed: () => Navigator.pop(context),
           ),
@@ -30,6 +30,7 @@ class FoodPage extends StatelessWidget {
 
 class CreateCards extends StatefulWidget {
   String passData;
+
   CreateCards({Key key, @required this.passData}) : super(key: key);
 
   @override
@@ -40,6 +41,7 @@ class CreateCards extends StatefulWidget {
 
 class CreateCardsState extends State<CreateCards> {
   String passData;
+  int i = 0;
   CreateCardsState(this.passData);
 
   @override
@@ -66,44 +68,121 @@ class CreateCardsState extends State<CreateCards> {
 
   buildListItem(BuildContext context, DocumentSnapshot data) {
     final row = GetCard.fromSnapshot(data);
+    double widtH = MediaQuery.of(context).size.width;
 
-    return Padding(
-      padding: const EdgeInsets.all(0.0),
-      child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  // ignore: deprecated_member_use
-                  FoodDetail(passData: passData, passDataName: row.name)),
-        ),
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 200,
-              child: Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(row.photo), fit: BoxFit.cover)),
+    i++;
+
+    if (i % 2 == 1) {
+      double lft = -60.0;
+
+      return Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    // ignore: deprecated_member_use
+                    FoodDetail(passData: passData, passDataName: row.name,passColor1: row.colors[0],passColor2: row.colors[1],passColor3: row.colors[2])),
+          ),
+          child: Column(
+            children: <Widget>[
+              Stack(
+                alignment: Alignment.topLeft,
+                children: <Widget>[
+                  Container(
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(row.colors[0], row.colors[1], row.colors[2], 1),
+                    ),
+                    child: Center(
+                        child: Text(
+                      row.name,
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontFamily: 'Berlin Sans FB Regular'),
+                    )),
+                  ),
+                  Positioned(
+                    left: lft,
+                    child: Container(
+                        height: 100,
+                        width: 140,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: NetworkImage(row.photo),
+                                fit: BoxFit.cover))),
+                  ),
+                ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else if (i % 2 == 0) {
+      double lft = widtH - 70;
+
+      return Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: InkWell(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    // ignore: deprecated_member_use
+                FoodDetail(passData: passData, passDataName: row.name,passColor1: row.colors[0],passColor2: row.colors[1],passColor3: row.colors[2])),
+          ),
+          child: Column(
+            children: <Widget>[
+              Stack(
+                alignment: Alignment.topLeft,
+                children: <Widget>[
+                  Container(
+                    height: 100,
+                    color: Color.fromRGBO(row.colors[0], row.colors[1], row.colors[2], 1),
+                    child: Center(
+                        child: Text(
+                      row.name,
+                      style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontFamily: 'Berlin Sans FB Regular'),
+                    )),
+                  ),
+                  Positioned(
+                    left: lft,
+                    child: Container(
+                        height: 100,
+                        width: 140,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: NetworkImage(row.photo),
+                                fit: BoxFit.cover))),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 }
 
 class GetCard {
   String photo;
   String name;
+  var colors;
   DocumentReference reference;
-
+  
   GetCard.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map["photo"] != null),
         assert(map["name"] != null),
         photo = map["photo"],
-        name = map["name"];
+        name = map["name"],
+        colors = List<int>.from(map['colors']);
+
 
   GetCard.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data(), reference: snapshot.reference);
