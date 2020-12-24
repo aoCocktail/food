@@ -74,7 +74,7 @@ class CreateCardsState extends State<CreateCards> {
     double widtH = MediaQuery.of(context).size.width;
 
     i++;
-    var clr;
+
 
     if (i % 2 == 1) {
       double lft = -60.0;
@@ -95,7 +95,7 @@ class CreateCardsState extends State<CreateCards> {
                 alignment: Alignment.topLeft,
                 children: <Widget>[
                   Container(
-                    height: 100,
+                    height: 120,
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(
                           row.colors[0], row.colors[1], row.colors[2], 1),
@@ -112,7 +112,7 @@ class CreateCardsState extends State<CreateCards> {
                   Positioned(
                     left: lft,
                     child: Container(
-                        height: 100,
+                        height: 120,
                         width: 140,
                         decoration: BoxDecoration(
                             image: DecorationImage(
@@ -126,7 +126,7 @@ class CreateCardsState extends State<CreateCards> {
         ),
       );
     } else if (i % 2 == 0) {
-      double lft = widtH - 70;
+      double rght = -60;
 
       return Padding(
         padding: const EdgeInsets.all(0.0),
@@ -144,7 +144,7 @@ class CreateCardsState extends State<CreateCards> {
                 alignment: Alignment.topLeft,
                 children: <Widget>[
                   Container(
-                    height: 100,
+                    height: 120,
                     color: Color.fromRGBO(
                         row.colors[0], row.colors[1], row.colors[2], 1),
                     child: Center(
@@ -157,14 +157,15 @@ class CreateCardsState extends State<CreateCards> {
                     )),
                   ),
                   Positioned(
-                    left: lft,
+                    right: rght,
                     child: Container(
-                        height: 100,
+                        height: 120,
                         width: 140,
+
                         decoration: BoxDecoration(
                             image: DecorationImage(
                                 image: NetworkImage(row.categoryPhoto),
-                                fit: BoxFit.cover))),
+                                fit: BoxFit.fill))),
                   ),
                 ],
               )
